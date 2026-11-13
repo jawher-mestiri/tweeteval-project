@@ -1,0 +1,6 @@
+Modèle,Accuracy,Precision (macro),Recall (macro),F1 (macro),F1 (classe offensive),Temps d'entraînement (s)
+Random Forest,0.7644,0.7429,0.7205,0.7283,0.6295,1.23
+Régression logistique,0.7372,0.7097,0.7089,0.7093,0.6193,0.05
+SVM linéaire,0.7341,0.7065,0.7065,0.7065,0.6166,0.03
+Naive Bayes,0.7205,0.6969,0.6476,0.6547,0.504,0.0
+KNN (k=15),0.7213,0.7488,0.6154,0.6101,0.4019,0.0

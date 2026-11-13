@@ -1,0 +1,15 @@
+# Versions testées (Python 3.13.1, Windows) — notebook exécuté avec cet ensemble
+pandas==3.0.3
+numpy==2.2.3
+scikit-learn==1.9.1
+matplotlib==3.10.1
+seaborn==0.13.2
+wordcloud==1.9.6
+nltk==3.10.4
+joblib==1.6.0
+pillow==11.1.0
+
+# Exécution / export du notebook
+nbformat==5.11.1
+nbconvert==7.17.2
+ipykernel==6.29.5

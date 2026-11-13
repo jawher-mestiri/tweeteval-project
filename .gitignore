@@ -1,0 +1,33 @@
+# --- Système ---
+.DS_Store
+Thumbs.db
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# --- Jupyter ---
+.ipynb_checkpoints/
+
+# --- Datasets non utilisés par le projet (seul datasets/offensive est nécessaire) ---
+datasets/emoji/
+datasets/emotion/
+datasets/hate/
+datasets/irony/
+datasets/sentiment/
+datasets/stance/
+
+# Notebook de démonstration du benchmark, sans rapport avec le projet
+TweetEval_Tutorial.ipynb
+
+# Prédictions d'exemple des autres tâches TweetEval
+predictions/emoji.txt
+predictions/emotion.txt
+predictions/hate.txt
+predictions/irony.txt
+predictions/sentiment.txt
+predictions/stance/
