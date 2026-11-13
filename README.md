@@ -1,194 +1,91 @@
-> 🎓 **Mini-projet CI1 (classification de textes)** : voir le [README du projet](README_PROJET.md)
-> et le [notebook](Mini_Projet_ML_TweetEval_Offensive.ipynb).
+# Détection du langage offensant dans les tweets
 
-# TweetEval
-This is the repository for the [_TweetEval_ benchmark (Findings of EMNLP 2020)](https://arxiv.org/pdf/2010.12421.pdf). _TweetEval_ consists of seven heterogenous tasks in Twitter, all framed as multi-class tweet classification. All tasks have been unified into the same benchmark, with each dataset presented in the same format and with fixed training, validation and test splits.
+**Mini-projet Machine Learning — TweetEval · Offensive** — Classe CI1, Faculté des Sciences de Bizerte.
 
-# TweetEval: The Benchmark
+Classer automatiquement un tweet comme **offensant** ou **non offensant**, avec des méthodes
+classiques de Machine Learning (TF-IDF + 5 algorithmes comparés).
 
-These are the seven datasets of TweetEval, with its corresponding labels (more details about the format in the [datasets](https://github.com/cardiffnlp/tweeteval/tree/main/datasets) directory):
+**Groupe :** *Jawher Monastiri, Taha Masmoudi, Lamis Oueslati*
 
-- **Emotion Recognition**: [SemEval 2018 - Emotion Recognition](https://www.aclweb.org/anthology/S18-1001/) (Mohammad et al., 2018) - 4 labels: `anger`, `joy`,`sadness`, `optimism`
+[📓 Notebook](Mini_Projet_ML_TweetEval_Offensive.ipynb) · [🌐 Version HTML](Mini_Projet_ML_TweetEval_Offensive.html)
 
-- **Emoji Prediction**, [SemEval 2018 - Emoji Prediction](https://www.aclweb.org/anthology/S18-1003.pdf) (Barbieri et al., 2018) - 20 labels: :heart:, :heart_eyes:, :joy:  `...` :evergreen_tree:, :camera:, :stuck_out_tongue_winking_eye:
+---
 
-- **Irony Detection**, [SemEval 2018 - Irony Detection](https://www.aclweb.org/anthology/S18-1005.pdf) (Van Hee et al., 2018) - 2 labels: `irony`, `not irony`
+## Le jeu de données
 
-- **Hate Speech Detection**, [SemEval 2019 - Hateval](https://www.aclweb.org/anthology/S19-2007.pdf) (Basile et al., 2019) - 2 labels: `hateful`, `not hateful`
-  
-- **Offensive Language Identification**, [SemEval 2019 - OffensEval](https://www.aclweb.org/anthology/S19-2010/) (Zampieri et al., 2019)- 2 labels: `offensive`, `not offensive`
+Dataset **TweetEval – Offensive** (issu de SemEval-2019 OffensEval), tweets en anglais, découpage
+officiel conservé.
 
-- **Sentiment Analysis***, [SemEval 2017 - Sentiment Analysis in Twitter](https://www.aclweb.org/anthology/S17-2088/) (Rosenthal et al., 2019) - 3 labels: `positive`, `neutral`, `negative`
+| Découpage | Non offensant | Offensant | Total |
+|---|---:|---:|---:|
+| Entraînement | 7 975 (66,9 %) | 3 941 (33,1 %) | 11 916 |
+| Validation | 865 | 459 | 1 324 |
+| Test | 620 | 240 | 860 |
 
-- **Stance Detection***, [SemEval 2016 - Detecting Stance in Tweets](https://www.aclweb.org/anthology/S16-1003/) (Mohammad et al., 2016) - 3 labels: `favour`, `neutral`, `against`
+<p align="center"><img src="figures/class_distribution.png" width="780" alt="Distribution des classes par découpage"></p>
 
-**Note 1***: For stance there are five different target topics (Abortion, Atheism, Climate change, Feminism and Hillary Clinton), each of which contains its own training, validation and test data.
+Le dataset est **déséquilibré** (2/3 – 1/3) : on utilise donc le **F1-score macro** comme métrique
+principale, plus fiable que l'accuracy seule.
 
-**Note 2***: The sentiment dataset has been updated as of 17 December 2020. The update has been minimal and it was intended to fix a small number of sentences that were cropped.
+## Ce que fait le système
 
-# TweetEval: Leaderboard (Test set)
+1. **Nettoyage** — minuscules, suppression des liens, mentions, ponctuation, allongements ;
+   stopwords retirés **sauf les négations** (`not`, `never`, `dont`…), puis lemmatisation.
+2. **Vectorisation** — TF-IDF uni- et bigrammes, 50 000 features, ajusté sur le train uniquement.
+3. **Modélisation** — 5 algorithmes : régression logistique, SVM linéaire, Random Forest,
+   Naive Bayes, KNN.
+4. **Sélection** — choix du meilleur modèle sur la validation, puis test final unique sur le test.
 
-| Model | Emoji | Emotion | Hate | Irony | Offensive | Sentiment | Stance | ALL(TE) | Reference |
-|----------|------:|--------:|-----:|------:|----------:|----------:|-------:|----:|---------|
-| BERTweet   | 33.4     | 79.3       | **56.4**    | **82.1**     | 79.5         | 73.4         | 71.2     | **67.9**  | [BERTweet](https://arxiv.org/abs/2005.10200) |
-| TimeLMs-2021   | **34.0**     | **80.2**      | 55.1    | 64.5     | **82.2**         | **73.7**         | **72.9**     | 66.2  | [TimeLMs](https://arxiv.org/abs/2202.03829) |
-| RoBERTa-Retrained   | 31.4     | 78.5       | 52.3    | 61.7     | 80.5         | 72.8         | 69.3     | 65.2  | [TweetEval](https://arxiv.org/pdf/2010.12421.pdf) |
-| RoBERTa-Base   | 30.9     | 76.1       | 46.6    | 59.7     | 79.5         | 71.3         | 68      | 61.3  | [TweetEval](https://arxiv.org/pdf/2010.12421.pdf) |
-| RoBERTa-Twitter   | 29.3     | 72.0       | 49.9    | 65.4     | 77.1         | 69.1        | 66.7     | 61.4  | [TweetEval](https://arxiv.org/pdf/2010.12421.pdf) |
-| FastText | 25.8     | 65.2       | 50.6    | 63.1     | 73.4         | 62.9         | 65.4      | 58.1 | [TweetEval](https://arxiv.org/pdf/2010.12421.pdf) |
-| LSTM      | 24.7     | 66.0       | 52.6    | 62.8     | 71.7         | 58.3         | 59.4      | 56.5 | [TweetEval](https://arxiv.org/pdf/2010.12421.pdf) |
-| SVM      | 29.3     | 64.7       | 36.7    | 61.7     | 52.3         | 62.9         | 67.3      | 53.5 | [TweetEval](https://arxiv.org/pdf/2010.12421.pdf) |
+<p align="center"><img src="figures/wordclouds.png" width="900" alt="Nuages de mots par classe après nettoyage"></p>
 
-**Note***: Check the [reference paper](https://arxiv.org/pdf/2010.12421.pdf) for details on the official metrics for each task
+## Résultats
 
-If you would like to have your results added to the leaderboard you can either submit a pull request or send an email to any of the paper authors with results and the predictions of your model. Please also submit a reference to a paper describing your approach.
+| Modèle | F1 macro (validation) |
+|---|---:|
+| **Random Forest** ✅ | **0,7283** |
+| Régression logistique | 0,7093 |
+| SVM linéaire | 0,7065 |
+| Naive Bayes | 0,6547 |
+| KNN (k = 15) | 0,6101 |
 
-# Evaluating your system
+<p align="center"><img src="figures/model_f1.png" width="700" alt="Comparaison des modèles - F1 macro"></p>
 
-For evaluating your system, you simply need an individual predictions file for each of the tasks. The format of the predictions file should be the same as the output examples in the predictions folder (one output label per line as per the original test file). The predictions included as an example in this repo correspond to the best model evaluated in the paper, i.e., RoBERTa re-trained on Twitter (RoB-Rt in the paper).  
+Le modèle retenu (Random Forest) ré-entraîné sur *train + val* obtient sur le **test officiel** :
 
-### Example usage
+| Accuracy | Précision macro | Rappel macro | **F1 macro** |
+|---:|---:|---:|---:|
+| 0,8035 | 0,7571 | 0,7411 | **0,7482** |
+
+<p align="center"><img src="figures/confusion_matrix_test.png" width="420" alt="Matrice de confusion sur le test"></p>
+
+Le modèle est fiable sur les tweets non offensants, mais **manque 40 % des tweets offensants**
+(96 faux négatifs) : c'est la limite principale de l'approche sac-de-mots, détaillée dans le notebook.
+
+## Contenu du dépôt
+
+| Fichier | Rôle |
+|---|---|
+| `Mini_Projet_ML_TweetEval_Offensive.ipynb` | Notebook complet, exécuté et commenté |
+| `Mini_Projet_ML_TweetEval_Offensive.html` | Version HTML du notebook |
+| `models/best_model_offensive.joblib` | Modèle final (TF-IDF + classifieur) |
+| `results/model_comparison.csv` | Tableau comparatif des 5 modèles |
+| `predictions/offensive_ml.txt` | Prédictions sur le test, format TweetEval |
+| `figures/` | Graphiques utilisés dans ce README |
+| `requirements.txt` | Dépendances Python (versions testées) |
+
+## Reproduire
 
 ```bash
-python evaluation_script.py
-```
-The script takes the TweetEval gold test labels and the predictions from the "predictions" folder by default, but you can set this to suit your needs as optional arguments.
-
-### Optional arguments
-
-Three optional arguments can be modified: 
-
-*--tweeteval_path*: Path to TweetEval datasets. Default: *"./datasets/"*
-
-*--predictions_path*: Path to predictions directory. Default: *"./predictions/"*
-
-*--task*: Use this to get single task detailed results *(emoji|emotion|hate|irony|offensive|sentiment|stance)*. Default: ""
-
-Evaluation script sample usage from the terminal with parameters:
-
-```bash
-python evaluation_script.py --tweeteval_path ./datasets/ --predictions_path ./predictions/ --task emoji
-```
-(this script would output the breakdown of the results for the emoji prediction task only)
-
-# Pre-trained models and code
-
-You can download the best Twitter masked language model (RoBERTa-retrained in the paper) from 🤗HuggingFace [here](https://huggingface.co/cardiffnlp/twitter-roberta-base). We also provide task-specific models:
-
-- [Twitter-RoBERTa-emoji](https://huggingface.co/cardiffnlp/twitter-roberta-base-emoji)
-- [Twitter-RoBERTa-emotion](https://huggingface.co/cardiffnlp/twitter-roberta-base-emotion)
-- [Twitter-RoBERTa-hate](https://huggingface.co/cardiffnlp/twitter-roberta-base-hate)
-- [Twitter-RoBERTa-irony](https://huggingface.co/cardiffnlp/twitter-roberta-base-irony)
-- [Twitter-RoBERTa-offensive](https://huggingface.co/cardiffnlp/twitter-roberta-base-offensive)
-- [Twitter-RoBERTa-sentiment](https://huggingface.co/cardiffnlp/twitter-roberta-base-sentiment)
-- Twitter-RoBERTa-stance - Coming soon
-
-To know how to use the pre-trained models, you can check our [Google Colab Notebook](https://colab.research.google.com/drive/18cNn4cJ-bAi-Luiqi8V6c09Tj-iiX0oG), with sample code for masked language modeling, extracting embeddings from tweets and tweet classification.
-
-**NEW!** A multilingual language model trained on Twitter for 30+ languages (XLM-T) is now available [here](https://github.com/cardiffnlp/xlm-t)
-
-**NEWx2!** You can now test TweetEval models as part of the [TweetNLP platform](https://tweetnlp.org).
-
-
-# Citing TweetEval
-
-If you use TweetEval in your research, please use the following `bib` entry to cite the [reference paper](https://arxiv.org/pdf/2010.12421.pdf).
-
-```
-@inproceedings{barbieri2020tweeteval,
-  title={{TweetEval:Unified Benchmark and Comparative Evaluation for Tweet Classification}},
-  author={Barbieri, Francesco and Camacho-Collados, Jose and Espinosa-Anke, Luis and Neves, Leonardo},
-  booktitle={Proceedings of Findings of EMNLP},
-  year={2020}
-}
-```
-# License
-
-TweetEval is released without any restrictions but restrictions may apply to individual tasks (which are derived from existing datasets) or Twitter (main data source). We refer users to the original licenses accompanying each dataset and Twitter regulations.
-
-
-# Citing TweetEval datasets
-
-If you use any of the TweetEval datasets, please cite their original publications:
-
-#### Emotion Recognition:
-```
-@inproceedings{mohammad2018semeval,
-  title={Semeval-2018 task 1: Affect in tweets},
-  author={Mohammad, Saif and Bravo-Marquez, Felipe and Salameh, Mohammad and Kiritchenko, Svetlana},
-  booktitle={Proceedings of the 12th international workshop on semantic evaluation},
-  pages={1--17},
-  year={2018}
-}
-
-```
-#### Emoji Prediction:
-```
-@inproceedings{barbieri2018semeval,
-  title={Semeval 2018 task 2: Multilingual emoji prediction},
-  author={Barbieri, Francesco and Camacho-Collados, Jose and Ronzano, Francesco and Espinosa-Anke, Luis and 
-    Ballesteros, Miguel and Basile, Valerio and Patti, Viviana and Saggion, Horacio},
-  booktitle={Proceedings of The 12th International Workshop on Semantic Evaluation},
-  pages={24--33},
-  year={2018}
-}
+pip install -r requirements.txt
+python -m nbconvert --to notebook --execute --inplace Mini_Projet_ML_TweetEval_Offensive.ipynb
 ```
 
-#### Irony Detection:
-```
-@inproceedings{van2018semeval,
-  title={Semeval-2018 task 3: Irony detection in english tweets},
-  author={Van Hee, Cynthia and Lefever, Els and Hoste, V{\'e}ronique},
-  booktitle={Proceedings of The 12th International Workshop on Semantic Evaluation},
-  pages={39--50},
-  year={2018}
-}
-```
+Ou simplement ouvrir le notebook dans Jupyter et l'exécuter depuis la racine du dépôt
+(les dossiers `models/`, `results/` et `predictions/` sont créés automatiquement).
 
-#### Hate Speech Detection:
-```
-@inproceedings{basile-etal-2019-semeval,
-    title = "{S}em{E}val-2019 Task 5: Multilingual Detection of Hate Speech Against Immigrants and Women in {T}witter",
-    author = "Basile, Valerio  and Bosco, Cristina  and Fersini, Elisabetta  and Nozza, Debora and Patti, Viviana and
-      Rangel Pardo, Francisco Manuel  and Rosso, Paolo  and Sanguinetti, Manuela",
-    booktitle = "Proceedings of the 13th International Workshop on Semantic Evaluation",
-    year = "2019",
-    address = "Minneapolis, Minnesota, USA",
-    publisher = "Association for Computational Linguistics",
-    url = "https://www.aclweb.org/anthology/S19-2007",
-    doi = "10.18653/v1/S19-2007",
-    pages = "54--63"
-}
-```
-#### Offensive Language Identification:
-```
-@inproceedings{zampieri2019semeval,
-  title={SemEval-2019 Task 6: Identifying and Categorizing Offensive Language in Social Media (OffensEval)},
-  author={Zampieri, Marcos and Malmasi, Shervin and Nakov, Preslav and Rosenthal, Sara and Farra, Noura and Kumar, Ritesh},
-  booktitle={Proceedings of the 13th International Workshop on Semantic Evaluation},
-  pages={75--86},
-  year={2019}
-}
-```
+Les ressources NLTK (*stopwords*, *wordnet*) sont téléchargées automatiquement au premier lancement.
+Les résultats sont déterministes (`random_state = 42`).
 
-#### Sentiment Analysis:
-```
-@inproceedings{rosenthal2017semeval,
-  title={SemEval-2017 task 4: Sentiment analysis in Twitter},
-  author={Rosenthal, Sara and Farra, Noura and Nakov, Preslav},
-  booktitle={Proceedings of the 11th international workshop on semantic evaluation (SemEval-2017)},
-  pages={502--518},
-  year={2017}
-}
-```
-
-#### Stance Detection:
-```
-@inproceedings{mohammad2016semeval,
-  title={Semeval-2016 task 6: Detecting stance in tweets},
-  author={Mohammad, Saif and Kiritchenko, Svetlana and Sobhani, Parinaz and Zhu, Xiaodan and Cherry, Colin},
-  booktitle={Proceedings of the 10th International Workshop on Semantic Evaluation (SemEval-2016)},
-  pages={31--41},
-  year={2016}
-}
-```
+Le fichier `predictions/offensive_ml.txt` respecte le format attendu par `evaluation_script.py` :
+recopié sous le nom `offensive.txt` dans un dossier de prédictions, il redonne exactement le score
+**F1 macro = 0,7482** du benchmark.
