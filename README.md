@@ -5,7 +5,7 @@
 Classer automatiquement un tweet comme **offensant** ou **non offensant**, avec des méthodes
 classiques de Machine Learning (TF-IDF + 5 algorithmes comparés).
 
-**Groupe :** *Jawher Monastiri, Taha Masmoudi, Lamis Oueslati*
+**Groupe :** *Jawher Monastiri, Taha Masmoudi, Lamis Oueslati,Ayoub Hadj Slama*
 
 [📓 Notebook](Mini_Projet_ML_TweetEval_Offensive.ipynb) · [🌐 Version HTML](Mini_Projet_ML_TweetEval_Offensive.html)
 
